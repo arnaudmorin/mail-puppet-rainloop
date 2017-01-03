@@ -6,13 +6,14 @@
 
 class rainloop {
   # Packages
-  package { 'nginx':       ensure => latest }
-  package { 'php5-fpm':    ensure => latest }
-  package { 'php5-mysql':  ensure => latest }
-  package { 'php5-mcrypt': ensure => latest }
-  package { 'php5-cli':    ensure => latest }
-  package { 'php5-curl':   ensure => latest }
-  package { 'php5-sqlite': ensure => latest }
+  package { 'nginx':          ensure => latest }
+  package { 'php7.0-fpm':     ensure => latest }
+  package { 'php7.0-mysql':   ensure => latest }
+  package { 'php7.0-mcrypt':  ensure => latest }
+  package { 'php7.0-cli':     ensure => latest }
+  package { 'php7.0-curl':    ensure => latest }
+  package { 'php7.0-sqlite3': ensure => latest }
+  package { 'php7.0-xml':     ensure => latest }
 
   # Rainloop files
   file { '/var/www/':
@@ -40,19 +41,39 @@ class rainloop {
 
   exec { 'install-rainloop':
     command => '/usr/bin/curl -s http://repository.rainloop.net/installer.php | php',
+    cwd     => '/var/www/rainloop/public_html/',
     creates => '/var/www/rainloop/public_html/index.php',
-    require => [Package['php5-cli'], File['/var/www/rainloop/public_html/']],
+    require => [
+      Package['php7.0-fpm'],
+      Package['php7.0-mysql'],
+      Package['php7.0-mcrypt'],
+      Package['php7.0-cli'],
+      Package['php7.0-curl'],
+      Package['php7.0-sqlite3'],
+      Package['php7.0-xml'],
+      File['/var/www/rainloop/public_html/']],
   }
 
   # Nginx config
   file { '/etc/nginx/sites-available/rainloop':
     ensure  => file,
-    source  => "puppet:///modules/${module_name}/rainloop",
+    content => template("${module_name}/rainloop"),
     require => Package['nginx'],
+    notify  => Service['nginx'],
   }
   ->
   file { '/etc/nginx/sites-enabled/rainloop':
     ensure  => link,
     target  => '/etc/nginx/sites-available/rainloop',
+    notify  => Service['nginx'],
+  }
+
+  file { '/etc/nginx/sites-enabled/default':
+    ensure  => absent,
+    notify  => Service['nginx'],
+  }
+
+  service { 'nginx':
+    ensure  => running,
   }
 }

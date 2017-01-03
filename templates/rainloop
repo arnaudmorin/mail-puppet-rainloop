@@ -1,10 +1,21 @@
 server {
-    server_name rainloop;
-    listen 80;
+    server_name _;
+    listen 80 default_server;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    server_name _;
+    listen 443 ssl;
     root /var/www/rainloop/public_html;
     access_log /var/www/rainloop/logs/access.log;
     error_log /var/www/rainloop/logs/error.log;
     index index.php;
+
+    ssl_certificate /etc/letsencrypt/live/<%= @fqdn %>/cert.pem;
+    ssl_certificate_key /etc/letsencrypt/live/<%= @fqdn %>/privkey.pem;
+    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
 
     location / {
         try_files $uri $uri/ /index.php?$query_string;
@@ -15,7 +26,7 @@ server {
         fastcgi_split_path_info ^(.+\.php)(.*)$;
         fastcgi_keep_conn on;
         include /etc/nginx/fastcgi_params;
-        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     }
 
