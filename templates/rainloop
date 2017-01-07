@@ -1,11 +1,11 @@
 server {
-    server_name _;
-    listen 80 default_server;
+    server_name <%= @fqdn %>;
+    listen 80;
     return 301 https://$host$request_uri;
 }
 
 server {
-    server_name _;
+    server_name <%= @fqdn %>;
     listen 443 ssl;
     root /var/www/rainloop/public_html;
     access_log /var/www/rainloop/logs/access.log;

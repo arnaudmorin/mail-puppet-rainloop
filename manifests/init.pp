@@ -5,8 +5,10 @@
 #
 
 class rainloop {
+  # Includes
+  include '::base::nginx'
+
   # Packages
-  package { 'nginx':          ensure => latest }
   package { 'php7.0-fpm':     ensure => latest }
   package { 'php7.0-mysql':   ensure => latest }
   package { 'php7.0-mcrypt':  ensure => latest }
@@ -15,11 +17,7 @@ class rainloop {
   package { 'php7.0-sqlite3': ensure => latest }
   package { 'php7.0-xml':     ensure => latest }
 
-  # Rainloop files
-  file { '/var/www/':
-    ensure  => directory,
-  }
-
+  ## Rainloop files
   file { '/var/www/rainloop':
     ensure  => directory,
     owner   => 'www-data',
@@ -66,14 +64,5 @@ class rainloop {
     ensure  => link,
     target  => '/etc/nginx/sites-available/rainloop',
     notify  => Service['nginx'],
-  }
-
-  file { '/etc/nginx/sites-enabled/default':
-    ensure  => absent,
-    notify  => Service['nginx'],
-  }
-
-  service { 'nginx':
-    ensure  => running,
   }
 }
