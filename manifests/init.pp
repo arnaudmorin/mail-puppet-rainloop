@@ -24,11 +24,18 @@ class rainloop {
     group   => 'www-data',
   }
 
-  file { '/var/www/rainloop/public_html/.well-known':
+  file { '/var/www/rainloop/public_html':
     ensure  => directory,
     owner   => 'www-data',
     group   => 'www-data',
     recurse => true,
+  }
+
+  file { '/var/www/rainloop/public_html/.well-known':
+    ensure  => directory,
+    owner   => 'www-data',
+    group   => 'www-data',
+    require => File['/var/www/rainloop/public_html/'],
   }
 
   exec { 'install-rainloop':
