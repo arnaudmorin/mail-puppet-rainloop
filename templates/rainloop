@@ -8,8 +8,8 @@ server {
     server_name <%= @fqdn %>;
     listen 443 ssl;
     root /var/www/rainloop/public_html;
-    access_log /var/www/rainloop/logs/access.log;
-    error_log /var/www/rainloop/logs/error.log;
+    access_log /var/log/nginx/<%= @fqdn %>_access.log;
+    error_log /var/log/nginx/<%= @fqdn %>_error.log;
     index index.php;
 
     ssl_certificate /etc/letsencrypt/live/<%= @fqdn %>/cert.pem;
@@ -36,5 +36,12 @@ server {
 
     location ^~ /data {
       deny all;
+    }
+
+    location ~ /.well-known {
+      allow all;
+      location ~ /.well-known/acme-challenge/(.*) {
+        add_header Content-Type application/jose+json;
+      }
     }
 }
