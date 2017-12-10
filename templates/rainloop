@@ -12,6 +12,10 @@ server {
     error_log /var/log/nginx/<%= @fqdn %>_error.log;
     index index.php;
 
+    # set max upload size
+    client_max_body_size 512M;
+    fastcgi_buffers 64 4K;
+
     ssl_certificate /etc/letsencrypt/live/<%= @fqdn %>/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/<%= @fqdn %>/privkey.pem;
     ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
