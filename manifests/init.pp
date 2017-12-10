@@ -66,4 +66,29 @@ class rainloop {
     target  => '/etc/nginx/sites-available/rainloop',
     notify  => Service['nginx'],
   }
+
+  # PHP configuration
+  ini_setting { '[PHP] post_max_size':
+    ensure  => present,
+    path    => '/etc/php/7.0/fpm/php.ini',
+    section => 'PHP',
+    setting => 'post_max_size',
+    value   => '512M',
+    require => Package['php7.0-fpm'],
+    notify  => Service['php7.0-fpm'],
+  }
+
+  ini_setting { '[PHP] upload_max_filesize':
+    ensure  => present,
+    path    => '/etc/php/7.0/fpm/php.ini',
+    section => 'PHP',
+    setting => 'upload_max_filesize',
+    value   => '512M',
+    require => Package['php7.0-fpm'],
+    notify  => Service['php7.0-fpm'],
+  }
+
+  service { 'php7.0-fpm':
+    ensure => running,
+  }
 }
